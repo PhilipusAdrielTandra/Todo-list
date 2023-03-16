@@ -4,7 +4,9 @@ import Name from './components/Name';
 import Title from './components/Title';
 import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
-
+import Login from './components/Login';
+import {collection, query, orderBy, onSnapshot } from "firebase/firestore"
+import {db} from './firebase';
 
 function App() {
   const [input, setInput] = useState('');
@@ -15,6 +17,16 @@ function App() {
   useEffect(() => {
     filterHandle();
   }, [todos, status]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'todos'), orderBy('created','desc'));
+    onSnapshot(q, (querySnapshot) => {
+      setTodos(querySnapshot.docs.map(todo => ({
+        id: todo.id,
+        data: todo.data()
+      })))
+    })
+  },[])
 
   const filterHandle = () => {
     switch(status){
@@ -29,6 +41,7 @@ function App() {
         break; 
     }
   }
+
    return (
     <div className="App">
       <header>
